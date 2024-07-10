@@ -1,3 +1,9 @@
 langchain_community
 flask
+langchain-text-splitters
+fastembed
+pdfplumber
+chromadb
+langchain 
+langchain-community
 streamlit
