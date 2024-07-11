@@ -22,11 +22,11 @@ text_splitter = RecursiveCharacterTextSplitter(
 
 raw_prompt = PromptTemplate.from_template(
     """ 
-    <s>[INST] Você é um assistente técnico bom em pesquisar documentos.[/INST] </s>
+    <s>[INST] Você é um assistente técnico bom em pesquisar documentos. Se você não tiver uma resposta com base nas informações fornecidas, diga-o.[/INST] </s>
     [INST] {input}
-           Contexto: {context}
-           Responder:
-           Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado na base de dados.
+        Contexto: {context}
+        Responder: Pesquisando apenas pelo contexto...
+        Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado na base de dados.
     [/INST]
 
 """
