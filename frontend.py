@@ -16,7 +16,10 @@ def ask_pdf(query):
     response = requests.post(endpoint, json={"query": query})
     return response.json()
 
-def upload_pdf(file_path):
+def upload_pdf(uploaded_file):
+    file_path = f"{uploaded_file.name}"
+    with open(file_path, "wb") as f:
+        f.write(uploaded_file.read())
     files = {"file": open(file_path, "rb")}
     endpoint = f"{BASE_URL}/pdf"
     response = requests.post(endpoint, files=files)
@@ -47,12 +50,9 @@ def main():
     uploaded_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
     if st.button("Enviar PDF"):
         if uploaded_file:
-            file_path = f"temp.pdf"
-            with open(file_path, "wb") as f:
-                f.write(uploaded_file.read())
-            result = upload_pdf(file_path)
+            result = upload_pdf(uploaded_file)
             st.write("Status:", result["status"])
-            st.write("Arquivo:", result["filename"])
+            st.write("Arquivo:", uploaded_file.name)
             st.write("Número de documentos:", result["doc_len"])
             st.write("Número de chunks:", result["chunks"])
 
