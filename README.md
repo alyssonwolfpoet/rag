@@ -21,6 +21,8 @@
         pip install -r requirements.txt
 
 # para testar
+installer o [ollama](https://ollama.com/) e execute
+> ollama pull llama3
 cria a venv e use o a.txt
 - pip install -r a.txt
 ## execute em dois terminais diferentes
