@@ -17,19 +17,38 @@ cached_llm = Ollama(model="llama3")
 embedding = FastEmbedEmbeddings()
 
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1024, chunk_overlap=80, length_function=len, is_separator_regex=False
+    chunk_size=2048, chunk_overlap=350, length_function=len, is_separator_regex=False
 )
 
 raw_prompt = PromptTemplate.from_template(
-    """ 
-    <s>[INST] Você é um assistente técnico bom em pesquisar documentos. Se você não tiver uma resposta com base nas informações fornecidas, diga-o.[/INST] </s>
-    [INST] {input}
-        Contexto: {context}
-        Responder: Pesquisando apenas pelo contexto...
-        Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado na base de dados.
-    [/INST]
+    """
+<s>[INST] Você é um assistente técnico especializado em pesquisar informações. Se não encontrar uma resposta com base nas informações fornecidas, diga o que não foi encontrado nehuma informação[/INST]</s>
+[INST] {input}
+    Contexto: {context}
+    Resultado: Pesquisando apenas pelo contexto...
+        - Encontre a informação solicitada no contexto e traduzha para português brasileiro se necessário.
+        - Se não encontrar nenhuma informação relevante no contexto, informe que não encontrou nada.
+        - Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado no contexto.
+        - Se o contexto não tiver resultado diga "informação nao encontrada"
+[/INST]
 """
 )
+
+
+@app.route("/ai", methods=["POST"])
+def aiPost():
+    print("Post /ai called")
+    json_content = request.json
+    query = json_content.get("query")
+
+    print(f"query: {query}")
+
+    response = cached_llm.invoke(query)
+
+    print(response)
+
+    response_answer = {"answer": response}
+    return response_answer
 
 
 @app.route("/ask_pdf", methods=["POST"])
