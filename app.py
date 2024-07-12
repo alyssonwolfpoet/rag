@@ -27,6 +27,7 @@ raw_prompt = PromptTemplate.from_template(
         Contexto: {context}
         Responder: Pesquisando apenas pelo contexto...
         Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado na base de dados.
+        você é um especialista responda so em portuques
     [/INST]
 
 """
