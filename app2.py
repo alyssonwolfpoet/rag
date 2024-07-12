@@ -1,129 +1,83 @@
-from flask import Flask, request
-from langchain_community.llms import Ollama
-from langchain_community.vectorstores import Chroma
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
-from langchain_community.document_loaders import PDFPlumberLoader
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
+from flask import Flask, request, jsonify
+from langchain_community import (
+    Ollama,
+    Chroma,
+    RecursiveCharacterTextSplitter,
+    FastEmbedEmbeddings,
+    PDFPlumberLoader,
+)
+from langchain.chains import create_retrieval_chain, create_stuff_documents_chain
 from langchain.prompts import PromptTemplate
 
 app = Flask(__name__)
 
-folder_path = "db"
+FOLDER_PATH = "db"
+LLM_MODEL = "llama3"
 
-cached_llm = Ollama(model="llama3")
-
+# Configurações globais
+llm = Ollama(model=LLM_MODEL)
 embedding = FastEmbedEmbeddings()
-
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=2048, chunk_overlap=350, length_function=len, is_separator_regex=False
+    chunk_size=1024, chunk_overlap=80, length_function=len, is_separator_regex=False
 )
 
-raw_prompt = PromptTemplate.from_template(
-    """
-<s>[INST] Você é um assistente técnico especializado em pesquisar informações. Se não encontrar uma resposta com base nas informações fornecidas, diga o que não foi encontrado nehuma informação[/INST]</s>
-[INST] {input}
-    Contexto: {context}
-    Resultado: Pesquisando apenas pelo contexto...
-        - Encontre a informação solicitada no contexto e traduzha para português brasileiro se necessário.
-        - Se não encontrar nenhuma informação relevante no contexto, informe que não encontrou nada.
-        - Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado no contexto.
-        - Se o contexto não tiver resultado diga "informação nao encontrada"
-[/INST]
+# Prompt template
+prompt_template = PromptTemplate.from_template(
+    """ 
+    <s>[INST] Você é um assistente técnico bom em pesquisar documentos. Se você não tiver uma resposta com base nas informações fornecidasno Contexto, diga-o nada foi encontrado.[/INST] 
+    [INST] {input}
+        Contexto: {context}
+        Responder: 
+    [/INST]
 """
 )
 
+# Chains
+document_chain = create_stuff_documents_chain(llm, prompt_template)
 
-@app.route("/ai", methods=["POST"])
-def aiPost():
-    print("Post /ai called")
-    json_content = request.json
-    query = json_content.get("query")
-
-    print(f"query: {query}")
-
-    response = cached_llm.invoke(query)
-
-    print(response)
-
-    response_answer = {"answer": response}
-    return response_answer
-
-
-@app.route("/ask_pdf", methods=["POST"])
-def askPDFPost():
-    json_content = request.json
-    query = json_content.get("query")
-
-    # Carregar o vetor de armazenamento
-    vector_store = Chroma(persist_directory=folder_path, embedding_function=embedding)
-
-    # Criar cadeia de busca
+def create_retrieval_chain(query):
+    vector_store = Chroma(persist_directory=FOLDER_PATH, embedding_function=embedding)
     retriever = vector_store.as_retriever(
         search_type="similarity_score_threshold",
-        search_kwargs={
-            "k": 1,
-            "score_threshold": 0.1,
-        },
+        search_kwargs={"k": 1, "score_threshold": 0.1},
     )
-
-    # Criar cadeia de documentos
-    document_chain = create_stuff_documents_chain(cached_llm, raw_prompt)
-
-    # Combinar cadeias
     chain = create_retrieval_chain(retriever, document_chain)
+    return chain
 
-    # Invocar a cadeia com a query
+@app.route("/ai", methods=["POST"])
+def ai_post():
+    query = request.get_json()["query"]
+    response = llm.invoke(query)
+    return jsonify({"answer": response})
+
+@app.route("/ask_pdf", methods=["POST"])
+def ask_pdf_post():
+    query = request.get_json()["query"]
+    chain = create_retrieval_chain(query)
     result = chain.invoke({"input": query})
-
-    # Verificar se algum documento foi encontrado
-    if result["context"]:
-        sources = []
-        for doc in result["context"]:
-            sources.append({
-                "source": doc.metadata["source"],
-                "page_content": doc.page_content
-            })
-        response_answer = {"answer": result["answer"], "sources": sources}
-    else:
-        response_answer = {"answer": "Não foi encontrado na base de dados.", "sources": []}
-
-    return response_answer
+    sources = [{"source": doc.metadata["source"], "page_content": doc.page_content} for doc in result["context"]]
+    return jsonify({"answer": result["answer"], "sources": sources})
 
 @app.route("/pdf", methods=["POST"])
-def pdfPost():
+def pdf_post():
     file = request.files["file"]
     file_name = file.filename
     save_file = "pdf/" + file_name
     file.save(save_file)
-    print(f"filename: {file_name}")
-
     loader = PDFPlumberLoader(save_file)
     docs = loader.load_and_split()
-    print(f"docs len={len(docs)}")
-
     chunks = text_splitter.split_documents(docs)
-    print(f"chunks len={len(chunks)}")
-
-    vector_store = Chroma.from_documents(
-        documents=chunks, embedding=embedding, persist_directory=folder_path
-    )
-
+    vector_store = Chroma.from_documents(documents=chunks, embedding=embedding, persist_directory=FOLDER_PATH)
     vector_store.persist()
-
-    response = {
+    return jsonify({
         "status": "Successfully Uploaded",
         "filename": file_name,
         "doc_len": len(docs),
         "chunks": len(chunks),
-    }
-    return response
-
+    })
 
 def start_app():
     app.run(host="0.0.0.0", port=8080, debug=True)
-
 
 if __name__ == "__main__":
     start_app()
