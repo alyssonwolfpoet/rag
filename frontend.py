@@ -44,7 +44,7 @@ def main():
             st.write("Fontes encontradas:")
             for source in result["sources"]:
                 st.write(f"Fonte: {source['source']}")
-                st.write(f"Conteúdo da página: {source['page_content']}")
+                #st.write(f"Conteúdo da página: {source['page_content']}")
 
     st.header("Upload de Arquivo PDF")
     uploaded_file = st.file_uploader("Escolha um arquivo PDF", type="pdf")
