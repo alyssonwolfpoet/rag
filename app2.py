@@ -32,8 +32,10 @@ raw_prompt = PromptTemplate.from_template(
     <s>[INST] Você é um assistente técnico bom em pesquisar documentos. Se você não tiver uma resposta com base nas informações fornecidas, diga-o.[/INST] </s>
     [INST] {input}
         Contexto: {context}
-        Responder: Pesquisando apenas pelo contexto...
-        Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado na base de dados.
+        Responder:
+            - Pesquisando apenas pelo contexto...
+            - Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado na base de dados.
+        story: {story}
     [/INST]
 """
 )
@@ -100,7 +102,12 @@ def askPDFPost():
     )
 
     # result = chain.invoke({"input": query})
-    result = retrieval_chain.invoke({"input": query})
+    result = retrieval_chain.invoke(
+        {
+            "input": query,
+            "story": chat_history
+         
+        })
     print(result["answer"])
     chat_history.append(HumanMessage(content=query))
     chat_history.append(AIMessage(content=result["answer"]))
