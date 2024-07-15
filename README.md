@@ -29,7 +29,7 @@ cria a venv e use o a.txt
     pip install -r a.txt
 ## execute em dois terminais diferentes
     python3 app.py
-    
+    <br>
     streamlit run frontend.py 
 
 
