@@ -72,7 +72,7 @@ def askPDFPost():
     retriever = vector_store.as_retriever(
         search_type="similarity_score_threshold",
         search_kwargs={
-            "k": 1,
+            "k": 20,
             "score_threshold": 0.1,
         },
     )
@@ -115,8 +115,8 @@ def askPDFPost():
     sources = []
     for doc in result["context"]:
         sources.append(
-            #{"source": doc.metadata["source"], "page_content": doc.page_content}
-            {"source": doc.metadata["source"]}
+            {"source": doc.metadata["source"], "page_content": doc.page_content}
+            #{"source": doc.metadata["source"]}
         )
 
     response_answer = {"answer": result["answer"], "sources": sources}
