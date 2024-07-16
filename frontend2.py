@@ -16,11 +16,15 @@ def ask_pdf(query):
     return response.json()
 
 def upload_pdfs(uploaded_files):
-    files = {}
-    for i, uploaded_file in enumerate(uploaded_files):
-        files[f"file{i}"] = (uploaded_file.name, uploaded_file.read(), "application/pdf")
+    files_to_send = []
+    for uploaded_file in uploaded_files:
+        file_path = f"{uploaded_file.name}"
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.read())
+        files_to_send.append(("files", open(file_path, "rb")))
+    
     endpoint = f"{BASE_URL}/pdf"
-    response = requests.post(endpoint, files=files)
+    response = requests.post(endpoint, files=dict(files_to_send))
     return response.json()
 
 # Define the main function that runs the Streamlit app
@@ -46,7 +50,7 @@ def main():
                 #st.write(f"Conteúdo da página: {source['page_content']}")
 
     st.header("Upload de Arquivos PDF")
-    uploaded_files = st.file_uploader("Escolha os arquivos PDF", type="pdf", accept_multiple_files=True)
+    uploaded_files = st.file_uploader("Escolha um ou mais arquivos PDF", type="pdf", accept_multiple_files=True)
     if st.button("Enviar PDFs"):
         if uploaded_files:
             result = upload_pdfs(uploaded_files)
