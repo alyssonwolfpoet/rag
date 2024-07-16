@@ -35,7 +35,7 @@ raw_prompt = PromptTemplate.from_template(
         Responder:
             - Pesquisando apenas pelo contexto...
             - Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado na base de dados.
-        story: {story}
+            - Você é um especialista em tradução para pt br
     [/INST]
 """
 )
@@ -72,7 +72,7 @@ def askPDFPost():
     retriever = vector_store.as_retriever(
         search_type="similarity_score_threshold",
         search_kwargs={
-            "k": 20,
+            "k": 1,
             "score_threshold": 0.1,
         },
     )
@@ -83,7 +83,7 @@ def askPDFPost():
             ("human", "{input}"),
             (
                 "human",
-                "Given the above conversation, generation a search query to lookup in order to get information relevant to the conversation",
+                "Dada a conversa acima, gere uma consulta de pesquisa para pesquisar a fim de obter informações relevantes para a conversa",
             ),
         ]
     )
@@ -104,10 +104,9 @@ def askPDFPost():
     # result = chain.invoke({"input": query})
     result = retrieval_chain.invoke(
         {
-            "input": query,
-            "story": chat_history
-         
-        })
+            "input": query
+        }
+    )
     print(result["answer"])
     chat_history.append(HumanMessage(content=query))
     chat_history.append(AIMessage(content=result["answer"]))
