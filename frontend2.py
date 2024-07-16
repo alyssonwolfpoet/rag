@@ -1,11 +1,10 @@
-# frontend.py
-
 import streamlit as st
 import requests
 
-# URL base do servidor Flask
+# Define the base URL for the backend API
 BASE_URL = "http://localhost:8080"
 
+# Define functions for each of the API endpoints
 def ai_query(query):
     endpoint = f"{BASE_URL}/ai"
     response = requests.post(endpoint, json={"query": query})
@@ -16,16 +15,15 @@ def ask_pdf(query):
     response = requests.post(endpoint, json={"query": query})
     return response.json()
 
-def upload_pdf(uploaded_files):
-    print(uploaded_files)
+def upload_pdfs(uploaded_files):
     files = {}
-    for uploaded_file in uploaded_files:
-        files[uploaded_file.name] = uploaded_file.read()
-
+    for i, uploaded_file in enumerate(uploaded_files):
+        files[f"file{i}"] = (uploaded_file.name, uploaded_file.read(), "application/pdf")
     endpoint = f"{BASE_URL}/pdf"
-    response = requests.post(endpoint, file=files)
+    response = requests.post(endpoint, files=files)
     return response.json()
 
+# Define the main function that runs the Streamlit app
 def main():
     st.title("Interface para Aplicativo Flask")
 
@@ -45,18 +43,17 @@ def main():
             st.write("Fontes encontradas:")
             for source in result["sources"]:
                 st.write(f"Fonte: {source['source']}")
-                # st.write(f"Conteúdo da página: {source['page_content']}")
+                #st.write(f"Conteúdo da página: {source['page_content']}")
 
-    st.header("Upload de Arquivo PDF")
+    st.header("Upload de Arquivos PDF")
     uploaded_files = st.file_uploader("Escolha os arquivos PDF", type="pdf", accept_multiple_files=True)
-    if st.button("Enviar PDF"):
+    if st.button("Enviar PDFs"):
         if uploaded_files:
-            result = upload_pdf(uploaded_files)
+            result = upload_pdfs(uploaded_files)
             st.write("Status:", result["status"])
-            for file_name, info in result["files_info"].items():
-                st.write("Arquivo:", file_name)
-                st.write("Número de documentos:", info["doc_len"])
-                st.write("Número de chunks:", info["chunks"])
+            st.write("Arquivos:", [file.name for file in uploaded_files])
+            st.write("Número de documentos:", result["doc_len"])
+            st.write("Número de chunks:", result["chunks"])
 
 if __name__ == "__main__":
     main()
