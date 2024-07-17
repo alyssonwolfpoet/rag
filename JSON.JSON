@@ -1,0 +1,25 @@
+{
+    "quiz": {
+      "title": "Meu Quiz",
+      "questions": [
+        {
+          "question": "Qual é o seu maior fã?",
+          "options": ["A", "B", "C"],
+          "correct": "B",
+        "explanation" : ""
+        },
+        {
+          "question": "Quais são as cores do arco-íris?",
+          "options": ["Vermelho, Amarelo, Verde", "Azul, Vermelho, Amarelo"],
+          "correct": "0",
+          "explanation" : ""
+        },
+        {
+          "question": "Qual é a capital da França?",
+          "options": ["Paris", "Londres", "Berlim"],
+          "correct": "0",
+          "explanation" : ""
+        }
+      ]
+    }
+  }

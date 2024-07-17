@@ -1,0 +1,65 @@
+{
+    "title": "Código Limpo - Capítulo 1",
+    "questions": [
+        {
+            "question": "O que é o princípio da responsabilidade única (SRP)?",
+            "options": ["Dividir a responsabilidade em várias classes", "Ter apenas uma razão para mudar", "Ter várias razões para mudar"],
+            "correct": "1",
+            "explanation": "O princípio da responsabilidade única (SRP) estabelece que uma classe deve ter apenas uma razão para mudar."
+        },
+        {
+            "question": "Qual é o objetivo do princípio da abertura/fechamento (OCP)?",
+            "options": ["Abrir a classe para modificações", "Fechar a classe para modificações", "Ambos"],
+            "correct": "1",
+            "explanation": "O objetivo do princípio da abertura/fechamento (OCP) é permitir que uma classe seja aberta para extensões, mas fechada para modificações."
+        },
+        {
+            "question": "O que é o princípio da substituição de Liskov (LSP)?",
+            "options": ["Substituir uma classe pai por uma classe filho", "Substituir uma classe filho por uma classe pai", "Ambos"],
+            "correct": "0",
+            "explanation": "O princípio da substituição de Liskov (LSP) estabelece que uma classe filho pode ser substituída por sua classe pai."
+        },
+        {
+            "question": "Qual é o objetivo do princípio da segregação de interfaces (ISP)?",
+            "options": ["Criar interfaces grandes e genéricas", "Criar interfaces pequenas e específicas", "Ambos"],
+            "correct": "1",
+            "explanation": "O objetivo do princípio da segregação de interfaces (ISP) é criar interfaces pequenas e específicas que atendam às necessidades de cada cliente."
+        },
+        {
+            "question": "O que é o princípio da inversão de dependência (DIP)?",
+            "options": ["Depender de classes concretas", "Depender de interfaces abstratas", "Ambos"],
+            "correct": "1",
+            "explanation": "O princípio da inversão de dependência (DIP) estabelece que uma classe deve depender de interfaces abstratas, e não de classes concretas."
+        },
+        {
+            "question": "Qual é o benefício de seguir os princípios SOLID?",
+            "options": ["Código mais complexo", "Código mais fácil de manter", "Código mais rápido"],
+            "correct": "1",
+            "explanation": "O benefício de seguir os princípios SOLID é que o código fica mais fácil de manter e evoluir."
+        },
+        {
+            "question": "O que é o princípio da interface segregada (ISP)?",
+            "options": ["Criar interfaces grandes e genéricas", "Criar interfaces pequenas e específicas", "Ambos"],
+            "correct": "1",
+            "explanation": "O princípio da interface segregada (ISP) estabelece que uma interface deve ser dividida em interfaces menores e mais específicas."
+        },
+        {
+            "question": "Qual é o objetivo do princípio da injeção de dependência (DI)?",
+            "options": ["Criar dependências fortes entre classes", "Criar dependências fracas entre classes", "Ambos"],
+            "correct": "1",
+            "explanation": "O objetivo do princípio da injeção de dependência (DI) é criar dependências fracas entre classes, tornando o código mais flexível e fácil de testar."
+        },
+        {
+            "question": "O que é o princípio da abstração?",
+            "options": ["Esconder a implementação", "Mostrar a implementação", "Ambos"],
+            "correct": "0",
+            "explanation": "O princípio da abstração estabelece que a implementação deve ser escondida e apenas a interface deve ser exposta."
+        },
+        {
+            "question": "Qual é o benefício de usar abstrações?",
+            "options": ["Código mais complexo", "Código mais fácil de entender", "Código mais rápido"],
+            "correct": "1",
+            "explanation": "O benefício de usar abstrações é que o código fica mais fácil."
+        }
+    ]
+}
