@@ -1,35 +1,23 @@
 import streamlit as st
-import json
+import requests
 
-# Carregue o JSON
-with open('quiz.json') as f:
-    quiz_data = json.load(f)
+st.title("Document Search and Answering System")
 
-# Crie uma lista para armazenar as respostas do usuário
-user_answers = []
+query_input = st.text_input("Enter your query:")
 
-# Crie um título para o quiz
-st.title(quiz_data['title'])
-st.write("")
+pdf_upload = st.file_uploader("Upload PDF files:", accept_multiple_files=True)
 
-# Percorra as perguntas do quiz
-for i, question in enumerate(quiz_data['questions']):
-    # Crie uma seção para a pergunta
-    with st.expander(question['question']):
-        # Crie uma pergunta com opções
-        options = question['options']
-        answer = st.selectbox('Selecione uma opção', options, key=f"question_{i}")
+if st.button("Search"):
+    if query_input:
+        response = requests.post("http://localhost:8080/ask_pdf", json={"query": query_input})
+        result = response.json()
+        st.write("Answer:", result["answer"])
+        st.write("Sources:")
+        for source in result["sources"]:
+            st.write(f"  - {source['source']}: {source['page_content']}")
 
-        # Armazene a resposta do usuário
-        user_answers.append(answer)
-
-        # Mostra a explicação da pergunta
-        st.write(question['explanation'])
-        st.write("")
-
-# Mostra o resultado do quiz
-st.write("")
-st.write("Resultado:")
-correct_answers = [question['options'][int(question['correct'])] for question in quiz_data['questions']]
-score = sum([a == b for a, b in zip(user_answers, correct_answers)])
-st.write(f'Você acertou {score} de {len(quiz_data["questions"])} perguntas!')
+if pdf_upload:
+    files = [{"filename": file.name, "file": file} for file in pdf_upload]
+    response = requests.post("http://localhost:8080/pdf", files={"files": files})
+    result = response.json()
+    st.write("Upload result:", result)

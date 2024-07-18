@@ -44,7 +44,7 @@ def main():
         if pdf_query:
             result = ask_pdf(pdf_query)
             st.write("Resposta:", result["answer"])
-            st.write("Fontes encontradas:")
+            #st.write("Fontes encontradas:")
             for source in result["sources"]:
                 st.write(f"Fonte: {source['source']}")
                 #st.write(f"Conteúdo da página: {source['page_content']}")

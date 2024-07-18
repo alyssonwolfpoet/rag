@@ -37,6 +37,7 @@ raw_prompt = PromptTemplate.from_template(
             - Pesquisar apenas o conteúdo do contexto e informar se nada for encontrado na base de dados.
             - Você é um especialista em tradução para pt br
             - não fuja do assunto e nem respondas coisas que esta fora do Contexto
+            - em poucas linhas
     [/INST]
 """
 )
